@@ -51,6 +51,72 @@ class _PhoneScreenState extends State<PhoneScreen> {
     _fetchPhones();
   }
 
+  void _updatePhone(PhoneModel phone) async {
+    await MongoService().updatePhone(phone);
+    _fetchPhones();
+  }
+
+  void _showEditDialog(PhoneModel phone) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Editar telefono'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: TextEditingController(text: phone.marca),
+                decoration: const InputDecoration(labelText: 'Marca'),
+                onChanged: (value) {
+                  phone.marca = value;
+                },
+              ),
+              TextField(
+                controller: TextEditingController(text: phone.modelo),
+                decoration: const InputDecoration(labelText: 'Modelo'),
+                onChanged: (value) {
+                  phone.modelo = value;
+                },
+              ),
+              TextField(
+                controller:
+                    TextEditingController(text: phone.existencia.toString()),
+                decoration: const InputDecoration(labelText: 'Existencia'),
+                onChanged: (value) {
+                  phone.existencia = int.parse(value);
+                },
+              ),
+              TextField(
+                controller:
+                    TextEditingController(text: phone.precio.toString()),
+                decoration: const InputDecoration(labelText: 'Precio'),
+                onChanged: (value) {
+                  phone.precio = double.parse(value);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                _updatePhone(phone);
+                Navigator.pop(context);
+              },
+              child: const Text('Guardar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   ListTile oneTitle(PhoneModel phone) {
     return ListTile(
         title: Text(phone.marca),
@@ -58,9 +124,9 @@ class _PhoneScreenState extends State<PhoneScreen> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const IconButton(
-              onPressed: null,
-              icon: Icon(Icons.edit),
+            IconButton(
+              onPressed: () => _showEditDialog(phone),
+              icon: const Icon(Icons.edit),
             ),
             IconButton(
               onPressed: () {
