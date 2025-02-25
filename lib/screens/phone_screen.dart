@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/models/phone_model.dart';
 import 'package:flutter_application_2/services/mongo_service.dart';
+import 'package:flutter_application_2/screens/insert_phone_screen.dart'; // Asegúrate de importar InsertPhoneScreen
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 
 class PhoneScreen extends StatefulWidget {
@@ -12,16 +13,27 @@ class PhoneScreen extends StatefulWidget {
 
 class _PhoneScreenState extends State<PhoneScreen> {
   List<PhoneModel> phones = [];
+  late TextEditingController _marcaController;
+  late TextEditingController _modeloController;
+  late TextEditingController _existenciaController;
+  late TextEditingController _precioController;
 
   @override
   void initState() {
     super.initState();
+    _marcaController = TextEditingController();
+    _modeloController = TextEditingController();
+    _existenciaController = TextEditingController();
+    _precioController = TextEditingController();
     _fetchPhones();
   }
 
   @override
   void dispose() {
-//Destruir está screen
+    _marcaController.dispose();
+    _modeloController.dispose();
+    _existenciaController.dispose();
+    _precioController.dispose();
     super.dispose();
   }
 
@@ -30,13 +42,35 @@ class _PhoneScreenState extends State<PhoneScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Inventario de telefonos'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: GestureDetector(
+              onTap: () async {
+                // Navegar a la pantalla de inserción de teléfono
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const InsertPhoneScreen(),
+                  ),
+                );
+                // Actualizar la lista de teléfonos después de regresar de la pantalla de inserción
+                _fetchPhones();
+              },
+              child: const Icon(
+                Icons.add,
+                size: 26.0,
+              ),
+            ),
+          ),
+        ],
       ),
       body: ListView.builder(
-          itemCount: phones.length,
-          itemBuilder: (context, index) {
-            var phone = phones[index];
-            return oneTitle(phone);
-          }),
+        itemCount: phones.length,
+        itemBuilder: (context, index) {
+          var phone = phones[index];
+          return oneTitle(phone);
+        },
+      ),
     );
   }
 
@@ -57,6 +91,11 @@ class _PhoneScreenState extends State<PhoneScreen> {
   }
 
   void _showEditDialog(PhoneModel phone) {
+    _marcaController.text = phone.marca;
+    _modeloController.text = phone.modelo;
+    _existenciaController.text = phone.existencia.toString();
+    _precioController.text = phone.precio.toString();
+
     showDialog(
       context: context,
       builder: (context) {
@@ -66,34 +105,20 @@ class _PhoneScreenState extends State<PhoneScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: TextEditingController(text: phone.marca),
+                controller: _marcaController,
                 decoration: const InputDecoration(labelText: 'Marca'),
-                onChanged: (value) {
-                  phone.marca = value;
-                },
               ),
               TextField(
-                controller: TextEditingController(text: phone.modelo),
+                controller: _modeloController,
                 decoration: const InputDecoration(labelText: 'Modelo'),
-                onChanged: (value) {
-                  phone.modelo = value;
-                },
               ),
               TextField(
-                controller:
-                    TextEditingController(text: phone.existencia.toString()),
+                controller: _existenciaController,
                 decoration: const InputDecoration(labelText: 'Existencia'),
-                onChanged: (value) {
-                  phone.existencia = int.parse(value);
-                },
               ),
               TextField(
-                controller:
-                    TextEditingController(text: phone.precio.toString()),
+                controller: _precioController,
                 decoration: const InputDecoration(labelText: 'Precio'),
-                onChanged: (value) {
-                  phone.precio = double.parse(value);
-                },
               ),
             ],
           ),
@@ -106,6 +131,10 @@ class _PhoneScreenState extends State<PhoneScreen> {
             ),
             TextButton(
               onPressed: () {
+                phone.marca = _marcaController.text;
+                phone.modelo = _modeloController.text;
+                phone.existencia = int.parse(_existenciaController.text);
+                phone.precio = double.parse(_precioController.text);
                 _updatePhone(phone);
                 Navigator.pop(context);
               },
@@ -119,22 +148,32 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
   ListTile oneTitle(PhoneModel phone) {
     return ListTile(
-        title: Text(phone.marca),
-        subtitle: Text(phone.modelo),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              onPressed: () => _showEditDialog(phone),
-              icon: const Icon(Icons.edit),
-            ),
-            IconButton(
-              onPressed: () {
-                _deletePhone(phone.id);
-              },
-              icon: const Icon(Icons.delete),
-            ),
-          ],
-        ));
+      leading: const Icon(Icons.phone_android),
+      title: Text(phone.marca),
+      subtitle: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(phone.modelo),
+          Text('${phone.existencia}'),
+          Text('${phone.precio}'),
+        ],
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            onPressed: () => _showEditDialog(phone),
+            icon: const Icon(Icons.edit),
+          ),
+          IconButton(
+            onPressed: () {
+              _deletePhone(phone.id);
+            },
+            icon: const Icon(Icons.delete),
+          ),
+        ],
+      ),
+    );
   }
 }
