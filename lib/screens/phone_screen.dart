@@ -149,14 +149,17 @@ class _PhoneScreenState extends State<PhoneScreen> {
   ListTile oneTitle(PhoneModel phone) {
     return ListTile(
       leading: const Icon(Icons.phone_android),
-      title: Text(phone.marca),
+      title: Text(
+        phone.marca,
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
       subtitle: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(phone.modelo),
-          Text('${phone.existencia}'),
-          Text('${phone.precio}'),
+          Text('existencia: ${phone.existencia}'),
+          Text('precio: ${phone.precio}'),
         ],
       ),
       trailing: Row(
