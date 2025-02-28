@@ -3,7 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 ThemeData tema1() {
   return ThemeData(
-      scaffoldBackgroundColor: Color(0xFF1E1E1E), // Dark grey background
+      scaffoldBackgroundColor:
+          Color.fromARGB(255, 255, 255, 255), // Dark grey background
       primaryColor: Color.fromARGB(255, 238, 255, 0), // Deep Purple
       appBarTheme: AppBarTheme(
         backgroundColor: Color.fromARGB(255, 0, 239, 243),
@@ -37,6 +38,6 @@ ThemeData tema1() {
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
         backgroundColor: Colors.amber,
-        foregroundColor: Colors.black,
+        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
       )));
 }
