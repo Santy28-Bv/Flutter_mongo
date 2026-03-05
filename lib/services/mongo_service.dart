@@ -1,18 +1,12 @@
 import 'dart:io';
-
 import 'package:flutter_application_2/models/phone_model.dart';
+import 'package:flutter_application_2/models/electrodomestico_model.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 
 class MongoService {
-  //servicio para conectar con mongodb atlas
-  //usando singleton
   static final MongoService _instance = MongoService._internal();
-
   MongoService._internal();
-
-  factory MongoService() {
-    return _instance;
-  }
+  factory MongoService() => _instance;
 
   late mongo.Db _db;
 
@@ -32,19 +26,15 @@ class MongoService {
   mongo.Db get db {
     if (!db.isConnected) {
       throw StateError(
-          'Base de datos no inicializa, llama a connect() primero');
+          'Base de datos no inicializada, llama a connect() primero');
     }
     return _db;
   }
 
+  // 🔹 MÉTODOS PARA CELULARES (EXISTENTES)
   Future<List<PhoneModel>> getPhones() async {
     final collection = _db.collection('celulares');
-    print('Colección obtenida: $collection');
     var phones = await collection.find().toList();
-    print('En MongoService: $phones');
-    if (phones.isEmpty) {
-      print('No se encontraron datos en la colección.');
-    }
     return phones.map((phone) => PhoneModel.fromJson(phone)).toList();
   }
 
@@ -65,7 +55,39 @@ class MongoService {
   }
 
   Future<void> deletePhone(mongo.ObjectId id) async {
-    var collection = _db.collection('celulares');
-    await collection.remove(mongo.where.eq('_id', id));
+    final collection = _db.collection('celulares');
+    await collection.deleteOne(mongo.where.eq('_id', id));
+  }
+
+  // 🔹 NUEVOS MÉTODOS PARA ELECTRODOMÉSTICOS
+  Future<List<ElectrodomesticoModel>> getElectrodomesticos() async {
+    final collection = _db.collection('electrodomesticos');
+    var electrodomesticos = await collection.find().toList();
+    return electrodomesticos
+        .map((electro) => ElectrodomesticoModel.fromJson(electro))
+        .toList();
+  }
+
+  Future<void> insertElectrodomestico(
+      ElectrodomesticoModel electrodomestico) async {
+    final collection = _db.collection('electrodomesticos');
+    await collection.insertOne(electrodomestico.toJson());
+  }
+
+  Future<void> updateElectrodomestico(
+      ElectrodomesticoModel electrodomestico) async {
+    final collection = _db.collection('electrodomesticos');
+    await collection.updateOne(
+        mongo.where.eq('_id', electrodomestico.id),
+        mongo.modify
+            .set('nombre', electrodomestico.nombre)
+            .set('marca', electrodomestico.marca)
+            .set('existencia', electrodomestico.existencia)
+            .set('precio', electrodomestico.precio));
+  }
+
+  Future<void> deleteElectrodomestico(mongo.ObjectId id) async {
+    final collection = _db.collection('electrodomesticos');
+    await collection.deleteOne(mongo.where.eq('_id', id));
   }
 }

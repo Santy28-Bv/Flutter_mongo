@@ -7,7 +7,7 @@ ThemeData tema1() {
           Color.fromARGB(255, 255, 255, 255), // Dark grey background
       primaryColor: Color.fromARGB(255, 238, 255, 0), // Deep Purple
       appBarTheme: AppBarTheme(
-        backgroundColor: Color.fromARGB(255, 0, 239, 243),
+        backgroundColor: Color.fromARGB(255, 93, 163, 255),
         titleTextStyle: GoogleFonts.roboto(
           color: Colors.white,
           fontSize: 24,
@@ -38,6 +38,6 @@ ThemeData tema1() {
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
         backgroundColor: Colors.amber,
-        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+        foregroundColor: const Color.fromARGB(255, 0, 0, 0),
       )));
 }

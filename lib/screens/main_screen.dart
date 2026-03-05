@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/screens/phone_screen.dart';
+import 'package:flutter_application_2/screens/electrodomestico_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -25,7 +26,13 @@ class MainScreen extends StatelessWidget {
             child: const Text('Celulares'),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ElectrodomesticoScreen(),
+                ),
+              );
+            },
             child: const Text('Electrodomésticos'),
           ),
         ],
